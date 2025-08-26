@@ -31,7 +31,7 @@
 struct Game {
   int window_width;
   int window_height;
-  char* window_name = "cosu!";
+  char* window_name;
 };
 
 typedef struct Game Game_t;

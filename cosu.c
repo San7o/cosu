@@ -41,6 +41,7 @@ int main(int argc, char** argv)
   Game_t game = (Game_t){
     .window_width = 300,
     .window_height = 800,
+    .window_name = "cosu!",
   };
   
   ret = game_loop(&game, &list);

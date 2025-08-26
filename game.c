@@ -32,6 +32,7 @@
 #include <SDL3/SDL_error.h>
 #include <SDL3/SDL_render.h>
 #include <SDL3/SDL_events.h>
+#include <SDL3/SDL_keyboard.h>
 
 int game_loop(Game_t *game, CosuHitObjectList_t *list)
 {
@@ -60,20 +61,40 @@ int game_loop(Game_t *game, CosuHitObjectList_t *list)
     
     if (SDL_PollEvent(&event))
     {
-      if (SDL_EVENT_QUIT == event.type)
+      
+      if (SDL_EVENT_KEY_DOWN == event.type)
       {
-        break;
+        if (event.key.key == 'q' || event.key.key == 0x1b /* ESC */)
+          break;
       }
     }
 
-    // TODO: call update
-
-    SDL_SetRenderDrawColor(renderer, 255, 0, 0, 0);
     if (!SDL_RenderClear(renderer))
     {
       err = -COSU_ERROR_SDL;
       goto cleanup;
     }
+
+    SDL_SetRenderDrawColor(renderer, 255, 255, 255, 0);
+    
+    SDL_FRect frect = {
+      .x = 0,
+      .y = 0,
+      .w = game->window_width / 4,
+      .h = 100,
+    };
+    if (!SDL_RenderFillRect(renderer, &frect))
+    {
+      err = -COSU_ERROR_SDL;
+      goto cleanup;
+    }
+
+    // TODO: call update
+
+    // TODO: Figure out time
+
+    SDL_SetRenderDrawColor(renderer, 255, 0, 0, 0);
+    
     if (!SDL_RenderPresent(renderer))
     {
       err = -COSU_ERROR_SDL;
