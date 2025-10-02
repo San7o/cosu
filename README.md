@@ -1,4 +1,4 @@
-![cosu logo](./cosu.png)
+![cosu logo](./cosu-banner.png)
 # cosu
 
 A rhythm game written in C, (not yet fully) compatible with osu!mania
