@@ -1,41 +1,41 @@
-/*
- * MIT License
- *
- * Copyright (c) 2025 Giovanni Santini
- *
- * Permission is hereby granted, free of charge, to any person obtaining a copy
- * of this software and associated documentation files (the "Software"), to deal
- * in the Software without restriction, including without limitation the rights
- * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
- * copies of the Software, and to permit persons to whom the Software is
- * furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
- * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
- * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
- * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
- * SOFTWARE.
- *
- */
+// SPDX-License-Identifier: MIT
 
-#ifndef _COSU_GAME_H
+#ifndef _COSU_GAME_H_
 #define _COSU_GAME_H_
 
-#include "parser.h"
+// Defaults
+#define SCREEN_WIDTH 300
+#define SCREEN_HEIGHT 800
+#define SCROLL_SPEED 1
+#define FPS 60
+#define NOTE_FREQUENCY 8
+#define RANDOM_MODE true
 
-struct Game {
+#include "RGFW.h"
+#include "miniaudio.h"
+#include "note.h"
+
+#include <stdbool.h>
+
+typedef struct {
   int window_width;
   int window_height;
   char* window_name;
-};
+  RGFW_window* win;
+  unsigned char *screen;
+  RGFW_surface *surface;
+  CosuNoteList map;
+  CosuNoteList notes;
+  double note_frequency;
+  double note_time;
+  double scroll_speed;
+  double delta_time;
+  double fps;
+  ma_engine audio_engine;
+  bool random_mode;
+} Game;
 
-typedef struct Game Game_t;
-
-int game_loop(Game_t *game, CosuHitObjectList_t *list);
+// Render a frame
+void game_frame(void *game);
 
 #endif // _COSU_GAME_H_

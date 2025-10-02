@@ -1,56 +1,86 @@
-/*
- * MIT License
- *
- * Copyright (c) 2025 Giovanni Santini
- *
- * Permission is hereby granted, free of charge, to any person obtaining a copy
- * of this software and associated documentation files (the "Software"), to deal
- * in the Software without restriction, including without limitation the rights
- * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
- * copies of the Software, and to permit persons to whom the Software is
- * furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
- * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
- * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
- * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
- * SOFTWARE.
- *
- */
+// SPDX-License-Identifier: MIT
 
-#include "cosu.h"
+#define _GNU_SOURCE
+#define MICRO_DRAW_IMPLEMENTATION
+#include "micro-draw.h"
+#define MICRO_LOG_IMPLEMENTATION
+#include "micro-log.h"
+#include "miniaudio.h"
+#include "RGFW.h"
+#include "game.h"
+#include "parser.h"
 
 #include <stdio.h>
+#ifdef __EMSCRIPTEN__
+#include <emscripten.h>
+#endif
 
 int main(int argc, char** argv)
 {
-  CosuHitObjectList_t list = {0};
-  int ret = cosu_hit_object_list_parse_file(&list, "maps/test.osu");
-  if (ret < 0)
-  {
-    fprintf(stderr, "Error %d parsing file\n", ret);
-    return -1;
-  }
-  // cosu_hit_object_list_print(&list);
-
-  Game_t game = (Game_t){
-    .window_width = 300,
-    .window_height = 800,
-    .window_name = "cosu!",
+  Game game = (Game) {
+    .window_width   = SCREEN_WIDTH,
+    .window_height  = SCREEN_HEIGHT,
+    .window_name    = "cosu!",
+    .scroll_speed   = SCROLL_SPEED,
+    .fps            = FPS,
+    .note_frequency = NOTE_FREQUENCY,
+    .notes          = {NULL, NULL},
+    .note_time      = 0.0,
+    .random_mode    = RANDOM_MODE,
   };
-  
-  ret = game_loop(&game, &list);
-  if (ret < 0)
+
+  if (!game.random_mode)
   {
-    fprintf(stderr, "Error %d in game loop\n", ret);
-    return -1;
+    int ret = cosu_note_list_parse_file(&game.map, "maps/test.osu");
+    if (ret < 0)
+    {
+      fprintf(stderr, "Error %d parsing file\n", ret);
+      return -1;
+    }
   }
   
-  cosu_hit_object_list_free(&list);
+  micro_log_init();
+  micro_log_set_flags(MICRO_LOG_FLAG_LEVEL
+                      | MICRO_LOG_FLAG_DATE
+                      | MICRO_LOG_FLAG_TIME);
+    
+  game.win = RGFW_createWindow("cosu",
+                               0, 0, SCREEN_WIDTH, SCREEN_HEIGHT,
+                               RGFW_windowCenter
+                               | RGFW_windowNoResize);
+  micro_log_info("Initialized window");
+
+  ma_result result;
+  result = ma_engine_init(NULL, &game.audio_engine);
+  if (result != MA_SUCCESS) {
+    return result;
+  }
+  
+  // Note: X11 uses RGBA
+  game.screen = malloc(SCREEN_WIDTH*SCREEN_HEIGHT
+                       *micro_draw_get_channels(MICRO_DRAW_RGBA8));
+
+  game.surface =
+    RGFW_window_createSurface(game.win, (u8*)game.screen,
+                              SCREEN_WIDTH, SCREEN_HEIGHT, RGFW_formatRGBA8);
+
+  RGFW_window_setExitKey(game.win, RGFW_escape);
+
+  game.delta_time = 0;
+  game.note_time = 0;
+
+  #ifdef __EMSCRIPTEN__
+  emscripten_set_main_loop_arg(game_frame, &game, game.fps, 1);
+  #else
+  while (RGFW_window_shouldClose(game.win) == RGFW_FALSE) game_frame(&game);
+  #endif // __EMSCRIPTEN__
+
+  micro_log_info("Cleaning up resources");
+  ma_engine_uninit(&game.audio_engine);
+  cosu_note_list_free(&game.notes);
+  RGFW_surface_free(game.surface);
+  free(game.screen);
+  RGFW_window_close(game.win);
+  micro_log_close();
   return 0;
 }
