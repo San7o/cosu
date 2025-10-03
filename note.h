@@ -1,7 +1,14 @@
 // SPDX-License-Identifier: MIT
+// Author:  Giovanni Santini
+// Mail:    giovanni.santini@proton.me
+// License: MIT
 
 #ifndef _COSU_NOTE_H_
 #define _COSU_NOTE_H_
+
+//
+// Types
+//
 
 typedef enum {
   COSU_TYPE_NOTE = 0,
@@ -12,6 +19,7 @@ typedef enum {
   COSU_TYPE_ERROR = -1,
 } CosuNoteType;
 
+// A single note
 typedef struct {
   CosuNoteType type;
   long int x;
@@ -32,6 +40,10 @@ typedef struct {
   CosuNoteListElem *head;
   CosuNoteListElem *tail;
 } CosuNoteList;
+
+//
+// Function definitions
+//
 
 void cosu_note_list_push_front(CosuNoteList *list,
                                CosuNote note);

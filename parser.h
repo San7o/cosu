@@ -1,4 +1,7 @@
 // SPDX-License-Identifier: MIT
+// Author:  Giovanni Santini
+// Mail:    giovanni.santini@proton.me
+// License: MIT
 
 #ifndef _COSU_PARSER_H_
 #define _COSU_PARSER_H_

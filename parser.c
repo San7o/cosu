@@ -1,4 +1,7 @@
 // SPDX-License-Identifier: MIT
+// Author:  Giovanni Santini
+// Mail:    giovanni.santini@proton.me
+// License: MIT
 
 #define _GNU_SOURCE
 #include "parser.h"
