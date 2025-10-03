@@ -3,6 +3,10 @@
 // Mail:    giovanni.santini@proton.me
 // License: MIT
 
+#ifndef _POSIX_C_SOURCE
+#define _POSIX_C_SOURCE 199309L
+#endif
+
 #include "game.h"
 #include "parser.h"
 #include "note.h"
@@ -41,7 +45,8 @@ void game_frame(void *arg)
   unsigned char color_red[4] = {255, 0, 0, 255};
   
   RGFW_event event;
-  clock_t frame_start = clock();
+  struct timespec frame_start, frame_end;
+  clock_gettime(CLOCK_MONOTONIC, &frame_start);
 
   while (RGFW_window_checkEvent(game->win, &event))
   {
@@ -161,8 +166,9 @@ void game_frame(void *arg)
   }
   #endif
 
-  clock_t frame_end = clock();
-  double diff = (double)(frame_end - frame_start) / CLOCKS_PER_SEC;
+  clock_gettime(CLOCK_MONOTONIC, &frame_end);
+  double diff = (frame_end.tv_sec - frame_start.tv_sec)
+    + (frame_end.tv_nsec - frame_start.tv_nsec) / 1e9;
   game->delta_time += diff;
   game->note_time += diff;
   return;
