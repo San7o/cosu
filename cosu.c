@@ -34,7 +34,6 @@ int main(int argc, char** argv)
     .note_time      = 0.0,
     .random_mode    = RANDOM_MODE,
     .delta_time     = 0,
-    .note_time      = 0,
     .map            = {NULL, NULL},
     .map_file       = MAP_FILE,
     .show_help      = false,
