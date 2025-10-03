@@ -20,7 +20,7 @@
 //
 // - test on windows
 // - test on wasm
-// - Parse an osu map without editing the file before
+// - Parse an osu map without editing the file beforehand
 // - Play map song
 //
 

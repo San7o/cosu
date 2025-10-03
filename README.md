@@ -1,6 +1,10 @@
 ![cosu logo](./cosu-banner.png)
 # cosu!
 
+A rhythm game written in C, (not yet fully) compatible with osu!mania maps.
+
+Build with `make`. Play with `d`, `f`, `j`, `k`, `esc`.
+
 ```
 $ ./cosu -h
 cosu
@@ -24,8 +28,6 @@ Options:
     -m,--map <str>
         use map file
 ```
-
-Build with `make`.
 
 ## Demo
 
