@@ -8,6 +8,8 @@
 #include "micro-draw.h"
 #define MICRO_LOG_IMPLEMENTATION
 #include "micro-log.h"
+#define MICRO_FLAG_IMPLEMENTATION
+#include "micro-flag.h"
 #include "miniaudio.h"
 #include "RGFW.h"
 #include "game.h"
@@ -33,8 +35,36 @@ int main(int argc, char** argv)
     .random_mode    = RANDOM_MODE,
     .delta_time     = 0,
     .note_time      = 0,
+    .map            = {NULL, NULL},
+    .map_file       = MAP_FILE,
+    .show_help      = false,
   };
 
+  MicroFlag flags[] =
+  {
+     { MICRO_FLAG_BOOL, &game.show_help, "-h", "--help", "show help message" },
+     { MICRO_FLAG_BOOL, &game.random_mode, "-r", "--random", "generate notes randomly" },
+     { MICRO_FLAG_DOUBLE, &game.note_frequency, "-f", "--frequency", "set random note frequency" },
+     { MICRO_FLAG_INT, &game.window_width, "-x", "--width", "set screen width" },
+     { MICRO_FLAG_INT, &game.window_height, "-y", "--height", "set screen height" },
+     { MICRO_FLAG_INT, &game.fps, "-p", "--fps", "set flames per second" },
+     { MICRO_FLAG_DOUBLE, &game.scroll_speed, "-s", "--speed", "set the scroll speed" },
+     { MICRO_FLAG_STR, &game.map_file, "-m", "--map", "use map file" },
+  };
+
+  size_t num_flags = sizeof(flags) / sizeof(flags[0]);  
+  if (micro_flag_parse(flags, num_flags, argc, argv) != MICRO_FLAG_OK)
+    return 1;
+
+  if (game.show_help)
+  {
+    micro_flag_print_help("cosu",
+                          "A rhythm game written in C, (not yet fully) compatible with osu!mania maps.",
+                          flags,
+                          num_flags);
+    return 0;
+  }
+  
   // Logging
   micro_log_init();
   micro_log_set_flags(MICRO_LOG_FLAG_LEVEL
@@ -44,7 +74,7 @@ int main(int argc, char** argv)
   if (!game.random_mode)
   {
     // Read Map file
-    int ret = cosu_note_list_parse_file(&game.map, "maps/test.osu");
+    int ret = cosu_note_list_parse_file(&game.map, game.map_file);
     if (ret < 0)
     {
       micro_log_error("Error %d parsing file\n", ret);

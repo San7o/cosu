@@ -18,8 +18,9 @@
 // TODO
 // ----
 //
-// - Parse arguments to set random mode and map file
 // - Fix clock to use real time in milliseconds
+// - test on windows
+// - test on wasm
 // - Parse an osu map without editing the file before
 // - Play map song
 //

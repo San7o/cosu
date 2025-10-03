@@ -1,8 +1,29 @@
 ![cosu logo](./cosu-banner.png)
 # cosu!
 
-A rhythm game written in C, (not yet fully) compatible with osu!mania
-maps.
+```
+$ ./cosu -h
+cosu
+A rhythm game written in C, (not yet fully) compatible with osu!mania maps.
+
+Options:
+    -h,--help 
+        show help message
+    -r,--random 
+        generate notes randomly
+    -f,--frequency <double>
+        set random note frequency
+    -x,--width <int>
+        set screen width
+    -y,--height <int>
+        set screen height
+    -p,--fps <int>
+        set flames per second
+    -s,--speed <double>
+        set the scroll speed
+    -m,--map <str>
+        use map file
+```
 
 Build with `make`.
 

@@ -115,9 +115,9 @@ void game_frame(void *arg)
       it = next;
     }
   }
-  
+
   #ifndef __EMSCRIPTEN__
-  if (game->delta_time > 1 / game->fps) // Should draw
+  if (game->delta_time > 1 / (double) game->fps) // Should draw
   {
   #endif
     game->delta_time = 0;

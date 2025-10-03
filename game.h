@@ -20,11 +20,13 @@
 // With random mode enabled, the game will randomly generate notes
 // endlessly. With this feature disabled, the game will read a map and
 // play it (map mode)
-#define RANDOM_MODE true
+#define RANDOM_MODE false
 // Notes per second to be generated if random mode is set to true
 #define NOTE_FREQUENCY 8
 // Audio file of the hitsound to play when a note is hit
 #define HITSOUND "sound/hitsound.mp3"
+// Default map
+#define MAP_FILE "maps/test.osu"
 
 #include "RGFW.h"
 #include "miniaudio.h"
@@ -46,8 +48,12 @@ typedef struct {
 
   // Wheter or not random mode is enabled
   bool random_mode;
-  
-  // Map to play if random mode is set to false
+  // Show the help message and exit
+  bool show_help;
+
+  // The file of the map to play if random mode is set to false
+  char *map_file;
+  // Notes to play if random mode is set to false
   CosuNoteList map;
   // List of notes during gameplay
   CosuNoteList notes;
@@ -64,7 +70,7 @@ typedef struct {
   // start for map mode
   double note_time;
   // See FPS
-  double fps;
+  int fps;
 } Game;
 
 // Render a frame
